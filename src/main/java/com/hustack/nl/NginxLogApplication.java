@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hustack.nl.scheduled.FetchLogScheduled;
+import com.hustack.nl.scheduled.LogScheduled;
 
 @RestController
 @EnableScheduling
@@ -15,7 +15,7 @@ import com.hustack.nl.scheduled.FetchLogScheduled;
 public class NginxLogApplication {
 	
 	@Autowired
-	private FetchLogScheduled fetchLogScheduled;
+	private LogScheduled fetchLogScheduled;
 
 	public static void main(String[] args) {
 		SpringApplication.run(NginxLogApplication.class, args);
