@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hustack.nl.scheduled.LogScheduled;
+import com.hustack.nl.scheduled.ParseScheduled;
 
 @RestController
 @EnableScheduling
@@ -16,6 +17,8 @@ public class NginxLogApplication {
 	
 	@Autowired
 	private LogScheduled fetchLogScheduled;
+	@Autowired
+	private ParseScheduled parseScheduled;
 
 	public static void main(String[] args) {
 		SpringApplication.run(NginxLogApplication.class, args);
@@ -29,5 +32,10 @@ public class NginxLogApplication {
 	@GetMapping("/log")
 	public String log() {
 		return fetchLogScheduled.fetchLog();
+	}
+
+	@GetMapping("/parse")
+	public String parse() {
+		return parseScheduled.parse();
 	}
 }

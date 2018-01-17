@@ -13,17 +13,19 @@ import org.springframework.stereotype.Component;
 public class ParseScheduled {
 	private Logger log = LoggerFactory.getLogger(ParseScheduled.class);
 	
-	public void parse() {
+	public String parse() {
 		Runtime runtime = Runtime.getRuntime();
+		String response = "NONE";
 		try {
-			String [] cmd={"ipconfig"}; 
+			String [] cmd={"./goaccess"}; 
 			Process exec = runtime.exec(cmd);
 			InputStream inputStream = exec.getInputStream();
-			String response = IOUtils.toString(inputStream, Charset.forName("GBK"));
-			System.out.println(response);
+			response = IOUtils.toString(inputStream, Charset.forName("GBK"));
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
+			response = e.getMessage();
 		}
+		return response;
 	}
 	
 	public static void main(String[] args) {
