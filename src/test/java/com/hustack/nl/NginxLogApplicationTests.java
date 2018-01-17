@@ -1,4 +1,4 @@
-package com.hustack.pm;
+package com.hustack.nl;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class PmApplicationTests {
+public class NginxLogApplicationTests {
 
 	@Test
 	public void contextLoads() {
