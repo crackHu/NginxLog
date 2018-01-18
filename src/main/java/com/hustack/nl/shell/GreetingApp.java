@@ -1,11 +1,9 @@
 package com.hustack.nl.shell;
 
-import org.springframework.shell.standard.ShellComponent;
-import org.springframework.shell.standard.ShellMethod;
-
-@ShellComponent
+// @ShellComponent
 public class GreetingApp {
-	@ShellMethod("Say hi")
+
+	// @ShellMethod("Say hi")
 	public String sayHi(String name) {
 		return String.format("Hi %s", name);
 	}

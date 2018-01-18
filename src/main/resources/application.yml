@@ -6,11 +6,11 @@ hustack:
     endpoint: https://www.peoplesmedic.com/logs/
     dateFormat: yyyy-MM-dd
     nameFormat: access.%date%.log
-    savePath: 
+    savePath: /logs
   parse:
     timeFormat: '%H:%M:%S'
     dateFormat: '%d/%b/%Y'
     logFormat: '%h %^ %^ [%d:%t %^] “%r” %s %b %^ “%R” “%u” %^ %T'
-    savePath: 
+    savePath: /html
   notice: 
   
