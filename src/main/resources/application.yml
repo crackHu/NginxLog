@@ -10,7 +10,7 @@ hustack:
   parse:
     timeFormat: '%H:%M:%S'
     dateFormat: '%d/%b/%Y'
-    logFormat: '%h %^ %^ [%d:%t %^] “%r” %s %b %^ “%R” “%u” %^ %T'
-    savePath: /html
+    logFormat: '%h %^ %^ [%d:%t %^] "%r" %s %b %^"%R" "%u" "%^" %T'
+    savePath: /reports
   notice: 
-  
+    

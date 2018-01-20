@@ -64,4 +64,8 @@ public class LogScheduled {
 		map.put("date", yesterday);
 		return StrSubstitutor.replace(nameFormat, map, prefix, suffix);
 	}
+	
+	public String getLogName() {
+		return getLogName(nameFormat, dateFormat);
+	}
 }
