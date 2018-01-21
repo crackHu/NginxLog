@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.hustack.nl.scheduled.job.ScheduledTasks;
 
-@Component
+// @Component
 public class InitializingCronTrigger extends BaseCronTrigger implements Serializable {
 
 	private static final long serialVersionUID = 1L;
