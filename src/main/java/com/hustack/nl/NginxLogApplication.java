@@ -1,27 +1,27 @@
 package com.hustack.nl;
 
+import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hustack.nl.configure.Test;
-import com.hustack.nl.scheduled.LogScheduled;
-import com.hustack.nl.scheduled.ParseScheduled;
+import com.hustack.nl.scheduled.job.LogJob;
+import com.hustack.nl.scheduled.job.ParseJob;
 
 @RestController
-@EnableScheduling
 @SpringBootApplication
 public class NginxLogApplication {
-	
+
 	@Autowired
-	private LogScheduled fetchLogScheduled;
+	private LogJob logJob;
 	@Autowired
-	private ParseScheduled parseScheduled;
+	private ParseJob parseJob;
+
 	@Autowired
 	@Qualifier("test2")
 	private Test test;
@@ -29,30 +29,45 @@ public class NginxLogApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(NginxLogApplication.class, args);
 	}
-	
+
 	@GetMapping("/")
 	public String hello() {
 		return "hello";
 	}
 
 	@GetMapping("/log")
-	public String log() {
-		return fetchLogScheduled.fetchLog();
+	public void log() {
+		try {
+			logJob.execute(null);
+		} catch (JobExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@GetMapping("/parse")
-	public String parse() {
-		return parseScheduled.parseHtml();
+	public void parse() {
+		try {
+			parseJob.execute(null);
+		} catch (JobExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@GetMapping("/exec/{cmd}")
 	public String exec(@PathVariable String cmd) {
-		return parseScheduled.exec(cmd);
+		return parseJob.exec(cmd);
 	}
 
 	@GetMapping("/goaccess")
-	public String goaccess() {
-		fetchLogScheduled.fetchLog();
-		return parseScheduled.parseHtml();
+	public void goaccess() {
+		try {
+			logJob.execute(null);
+			parseJob.execute(null);
+		} catch (JobExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
