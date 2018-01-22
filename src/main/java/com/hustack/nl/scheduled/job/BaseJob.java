@@ -36,6 +36,10 @@ public abstract class BaseJob implements Job {
 	
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
+		if (context == null) {
+			execute(null);
+			return;
+		}
 		JobDetail jobDetail = context.getJobDetail();
 		JobKey key = jobDetail.getKey();
 		String name = key.getName();

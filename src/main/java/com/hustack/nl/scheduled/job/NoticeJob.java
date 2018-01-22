@@ -65,7 +65,7 @@ public class NoticeJob extends BaseJob {
 		DDRobot ddRobot = new DDRobot();
 		Markdown markdown = new Markdown();
 		markdown.setTitle("昨日统计");
-		markdown.setText("#### **昨日统计**\n" +
+		markdown.setText("#### **昨日统计(总)**\n" +
                  String.format("> Total Requests (总请求)：%s\n\n", totalRequests) +
                  String.format("> Valid Requests (有效的请求)：%s\n\n", validRequests) + 
                  String.format("> Failed Requests (失败的请求)：%s\n\n", failedRequests) +
@@ -91,7 +91,7 @@ public class NoticeJob extends BaseJob {
 
 	public static void main(String[] args) {
 		try {
-			new NoticeJob().execute(null);
+			new NoticeJob().exec(null);
 		} catch (JobExecutionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -127,7 +127,6 @@ public class NoticeJob extends BaseJob {
 		try {
 			File file = jsonFile.toFile();
 			json = Files.asCharSource(file, StandardCharsets.UTF_8).read();
-			super.logger.info("parseJson: {}", json);
 		} catch (Exception e) {
 			super.logger.error("Oops, parseJson has error: {}", e.getMessage(), e);
 			return new Report();
