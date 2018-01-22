@@ -60,7 +60,7 @@ public class NginxLogApplication {
 
 	@GetMapping("/exec/{cmd}")
 	public String exec(@PathVariable String cmd) {
-		return parseJob.exec(cmd);
+		return parseJob.execCMD(cmd);
 	}
 
 	@GetMapping("/goaccess")

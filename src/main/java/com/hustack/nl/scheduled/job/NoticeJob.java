@@ -5,18 +5,16 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.io.Files;
+import com.hustack.nl.configure.HuStackProperties;
+import com.hustack.nl.configure.HuStackProperties.Notice;
 import com.hustack.nl.domain.DDRobot;
 import com.hustack.nl.domain.General;
 import com.hustack.nl.domain.Markdown;
@@ -24,12 +22,7 @@ import com.hustack.nl.domain.Report;
 import com.hustack.nl.util.JSONUtils;
 
 @Component
-public class NoticeJob implements Job {
-
-	private Logger log = LoggerFactory.getLogger(NoticeJob.class);
-	
-	@Autowired
-	private LogJob logJob;
+public class NoticeJob extends BaseJob {
 
 	@Value("${hustack.notice.cron}")
 	private String cron;
@@ -38,11 +31,19 @@ public class NoticeJob implements Job {
 	private String webhook;
 
 	@Override
-	public void execute(JobExecutionContext context) throws JobExecutionException {
+	public void initSpringProperties() {
+		HuStackProperties properties = super.getProperties();
+		Notice notice = properties.getNotice();
+		cron = notice.getCron();
+		webhook = notice.getWebhook();
+	}
+
+	@Override
+	public void exec(JobExecutionContext context) throws JobExecutionException {
 	
 		long begin = System.currentTimeMillis();
 		
-//		Path reportJsonPath = logJob.getReportJsonPath();
+//		Path reportJsonPath = super.getReportJsonPath();
 		Path reportJsonPath = Paths.get("index.json");
 		
 		Report result = parseJson(reportJsonPath);
@@ -76,14 +77,14 @@ public class NoticeJob implements Job {
 		
 		ddRobot.setMarkdown(markdown);
 		
-		log.info("ddRobot send logDate report: {}", ddRobot);
+		super.logger.info("ddRobot send logDate report: {}", ddRobot);
 		
 		RestTemplate restTemplate = new RestTemplate();
 		webhook = "https://oapi.dingtalk.com/robot/send?access_token=b271dcd03cceddca8509a3d0efd29b7a88bf86e05f63daa06dd35feb44a24b07";
 		ResponseEntity<String> entity = restTemplate.postForEntity(webhook, ddRobot, String.class);
 		String body = entity.getBody();
 		
-		log.info("ddRobot receive response: {}", body);
+		super.logger.info("ddRobot receive response: {}", body);
 	}
 
 	public static void main(String[] args) {
@@ -124,21 +125,26 @@ public class NoticeJob implements Job {
 		try {
 			File file = jsonFile.toFile();
 			json = Files.asCharSource(file, StandardCharsets.UTF_8).read();
-			log.info("parseJson: {}", json);
+			super.logger.info("parseJson: {}", json);
 		} catch (Exception e) {
-			log.error("Oops, parseJson has error: {}", e.getMessage(), e);
+			super.logger.error("Oops, parseJson has error: {}", e.getMessage(), e);
 			return new Report();
 		}
 		try {
 			report = JSONUtils.json2pojo(json, Report.class);
 		} catch (Exception e) {
 			report = new Report();
-			log.error("Oops, parseJson has error: {}", e.getMessage(), e);
+			super.logger.error("Oops, parseJson has error: {}", e.getMessage(), e);
 		}
 		return report;
 	}
 
 	public String getCron() {
+		return cron;
+	}
+
+	@Override
+	public String getCronExpression() {
 		return cron;
 	}
 }

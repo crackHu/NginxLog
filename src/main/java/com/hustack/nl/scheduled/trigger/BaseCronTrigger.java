@@ -2,24 +2,38 @@ package com.hustack.nl.scheduled.trigger;
 
 import java.io.Serializable;
 
-import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 
-public abstract class BaseCronTrigger extends CronTriggerFactoryBean implements Serializable {
+import com.hustack.nl.scheduled.job.BaseJob;
+import com.hustack.nl.scheduled.job.ParseJob;
+
+public abstract class BaseCronTrigger<T extends BaseJob> extends CronTriggerFactoryBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	private Job job;
+	private final static Logger log = LoggerFactory.getLogger(ParseJob.class);
+	
+	private T job;
 	
 	private String cornExpression;
 	
+	public BaseCronTrigger(T job) {
+		this.job = job;
+		init();
+	}
+	
 	public void init() {
-		this.job = getJob();
-		this.cornExpression = getCronExpression();
+		if(job == null) {
+			log.info("BaseCronTrigger job is null");
+			throw new NullPointerException();
+		}
+		this.cornExpression = job.getCronExpression();
 		
-		Class<? extends Job> jobClass = this.job.getClass();
+		final Class<? extends BaseJob> jobClass = job.getClass(); 
 		final String jobName = jobClass.getSimpleName();
 		final String jobGroup = "group1";
 		
@@ -27,9 +41,5 @@ public abstract class BaseCronTrigger extends CronTriggerFactoryBean implements 
 		this.setJobDetail(jobDetail);
 		this.setCronExpression(cornExpression);
 	}
-
-	public abstract Job getJob();
-
-	public abstract String getCronExpression();
 
 }
