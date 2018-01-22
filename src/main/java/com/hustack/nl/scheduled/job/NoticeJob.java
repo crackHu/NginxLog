@@ -3,6 +3,7 @@ package com.hustack.nl.scheduled.job;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -41,11 +42,14 @@ public class NoticeJob implements Job {
 	
 		long begin = System.currentTimeMillis();
 		
-		Path reportJsonPath = logJob.getReportJsonPath();
-//		Path reportJsonPath = Paths.get("H:", "crack", "Desktop", "index.json");
+//		Path reportJsonPath = logJob.getReportJsonPath();
+		Path reportJsonPath = Paths.get("index.json");
 		
 		Report result = parseJson(reportJsonPath);
 		General general = result.getGeneral();
+		if (general == null) {
+			return;
+		}
 		
 		Integer totalRequests = general.getTotalRequests();
 		Integer validRequests = general.getValidRequests();
@@ -53,27 +57,29 @@ public class NoticeJob implements Job {
 		Integer uniqueVisitors = general.getUniqueVisitors();
 		Long logSize = general.getLogSize();
 		Long bandwidth = general.getBandwidth();
-		String logDate = logJob.getLogDate();
-//		String logDate = "2018-01-21";
+//		String logDate = logJob.getLogDate();
+		String logDate = "2018-01-21";
 		String detail = "http://120.78.94.189/report/" + logDate;
 		
 		DDRobot ddRobot = new DDRobot();
 		Markdown markdown = new Markdown();
 		markdown.setTitle("昨日统计");
-		markdown.setText("#### 昨日统计\n" +
-                 String.format("Total Requests (总请求)：%s\n\n", totalRequests) +
-                 String.format("Valid Requests (有效的请求)：%s\n\n", validRequests) + 
-                 String.format("Failed Requests (失败的请求)：%s\n\n", failedRequests) +
-                 String.format("Unique Visitors (独立访客)：%s\n\n", uniqueVisitors) +
-                 String.format("Log Size (日志大小)：%s\n\n", getPrintSize(logSize)) +
-                 String.format("Bandwidth (带宽)：%s\n", getPrintSize(bandwidth)) +
-				 String.format("###### %s [详情](%s) Cost: %s ms \n", logDate, detail, (System.currentTimeMillis() - begin)));
+		markdown.setText("#### **昨日统计**\n" +
+                 String.format("> Total Requests (总请求)：%s\n\n", totalRequests) +
+                 String.format("> Valid Requests (有效的请求)：%s\n\n", validRequests) + 
+                 String.format("> Failed Requests (失败的请求)：%s\n\n", failedRequests) +
+                 String.format("> Unique Visitors (独立访客)：%s\n\n", uniqueVisitors) +
+                 String.format("> Log Size (日志大小)：%s\n\n", getPrintSize(logSize)) +
+                 String.format("> Bandwidth (带宽)：%s\n", getPrintSize(bandwidth)) +
+				 "***\n" +
+				 String.format("###### *%s [详情](%s)  Cost: %s ms* \n", logDate, detail, (System.currentTimeMillis() - begin)));
+		
 		ddRobot.setMarkdown(markdown);
 		
 		log.info("ddRobot send logDate report: {}", ddRobot);
 		
 		RestTemplate restTemplate = new RestTemplate();
-//		webhook = "https://oapi.dingtalk.com/robot/send?access_token=b271dcd03cceddca8509a3d0efd29b7a88bf86e05f63daa06dd35feb44a24b07";
+		webhook = "https://oapi.dingtalk.com/robot/send?access_token=b271dcd03cceddca8509a3d0efd29b7a88bf86e05f63daa06dd35feb44a24b07";
 		ResponseEntity<String> entity = restTemplate.postForEntity(webhook, ddRobot, String.class);
 		String body = entity.getBody();
 		
@@ -90,6 +96,9 @@ public class NoticeJob implements Job {
 	}
 	
 	private static String getPrintSize(Long b) {
+		if (b == null) {
+			return null;
+		}
 		Double bit = new Double(b);
 		if (bit < 1024) {
 			return String.format("%.2f B", bit);
@@ -110,6 +119,7 @@ public class NoticeJob implements Job {
 	}
 	
 	public Report parseJson(Path jsonFile) {
+		Report report = null;
 		String json = null;
 		try {
 			File file = jsonFile.toFile();
@@ -117,8 +127,8 @@ public class NoticeJob implements Job {
 			log.info("parseJson: {}", json);
 		} catch (Exception e) {
 			log.error("Oops, parseJson has error: {}", e.getMessage(), e);
+			return new Report();
 		}
-		Report report = null;
 		try {
 			report = JSONUtils.json2pojo(json, Report.class);
 		} catch (Exception e) {

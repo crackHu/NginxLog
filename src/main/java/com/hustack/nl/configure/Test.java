@@ -13,6 +13,6 @@ public class Test {
 
 	@Override
 	public String toString() {
-		return "Test [id=" + id + "]";
+		return "Test [id=" + id + "]" + this.hashCode();
 	}
 }

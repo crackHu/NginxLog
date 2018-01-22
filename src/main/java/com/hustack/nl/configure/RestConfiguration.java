@@ -36,7 +36,7 @@ public class RestConfiguration {
 	}
 
 	@Bean
-	public Test test() {
+	public Test test1() {
 		return new Test();
 	}
 

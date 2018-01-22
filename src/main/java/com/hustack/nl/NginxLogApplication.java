@@ -21,10 +21,13 @@ public class NginxLogApplication {
 	private LogJob logJob;
 	@Autowired
 	private ParseJob parseJob;
-
+	
+	@Autowired
+	private Test test1;
+	
 	@Autowired
 	@Qualifier("test2")
-	private Test test;
+	private Test test3;
 
 	public static void main(String[] args) {
 		SpringApplication.run(NginxLogApplication.class, args);
