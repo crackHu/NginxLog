@@ -43,8 +43,11 @@ public abstract class BaseJob implements Job {
 		String description = jobDetail.getDescription();
 		logger.info("BaseJob execute: name = {}, group = {}, description = {}", name, group, description);
 		try {
+			long begin = System.currentTimeMillis();
 			initSpringProperties();
 			exec(context);
+			long end = System.currentTimeMillis();
+			logger.info("BaseJob execute [{}] success, const {} ms", name, end - begin);
 		} catch (Exception e) {
 			logger.error("Oops, BaseJob execute has error: {}", e.getMessage(), e);
 			throw new JobExecutionException(e);

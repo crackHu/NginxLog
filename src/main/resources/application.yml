@@ -8,14 +8,14 @@ hustack:
     dateFormat: yyyy-MM-dd
     nameFormat: access.%date%.log
     savePath: /logs
-    cron: '0 52 2 * * ?'
+    cron: '0 12 3 * * ?'
   parse:
     timeFormat: '%H:%M:%S'
     dateFormat: '%d/%b/%Y'
     logFormat: '%h %^ %^ [%d:%t %^] "%r" %s %b %^"%R" "%u" "%^" %T'
     savePath: /reports
-    cron: '0 54 2 * * ?'
+    cron: '30 12 3 * * ?'
   notice: 
-    cron: '0 56 2 * * ?'
+    cron: '0 13 3 * * ?'
     webhook: https://oapi.dingtalk.com/robot/send?access_token=b271dcd03cceddca8509a3d0efd29b7a88bf86e05f63daa06dd35feb44a24b07
     # webhook: https://oapi.dingtalk.com/robot/send?access_token=45ccf60651d3790792012d1de8283b572a3ee918c336fcf2f4b71fdaa4d42dbe

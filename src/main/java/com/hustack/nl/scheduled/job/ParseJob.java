@@ -16,11 +16,6 @@ import com.hustack.nl.configure.HuStackProperties.Parse;
 
 @Component
 public class ParseJob extends BaseJob {
-
-	private final static Runtime runtime = Runtime.getRuntime();
-	
-	// goaccess -a -d -f /logs/access.2018-01-19.log --time-format='%H:%M:%S' --date-format='%d/%b/%Y' --log-format='%h %^ %^ [%d:%t %^] "%r" %s %b %^"%R" "%u" "%^" %T' -o /html/index.html
-	private final String CMD_PARSE = "goaccess -a -d -f %s --time-format='%s' --date-format='%s' --log-format='%s' -o %s";
 	
 	@Value("${hustack.parse.timeFormat}")
 	private String timeFormat;
@@ -33,6 +28,11 @@ public class ParseJob extends BaseJob {
 
 	@Value("${hustack.parse.cron}")
 	private String cron;
+
+	private final static Runtime runtime = Runtime.getRuntime();
+	
+	// goaccess -a -d -f /logs/access.2018-01-19.log --time-format='%H:%M:%S' --date-format='%d/%b/%Y' --log-format='%h %^ %^ [%d:%t %^] "%r" %s %b %^"%R" "%u" "%^" %T' -o /html/index.html
+	private final String CMD_PARSE = "goaccess -a -d -f %s --time-format='%s' --date-format='%s' --log-format='%s' -o %s";
 
 	@Override
 	public void initSpringProperties() {

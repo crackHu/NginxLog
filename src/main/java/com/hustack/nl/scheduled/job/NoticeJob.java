@@ -29,6 +29,8 @@ public class NoticeJob extends BaseJob {
 	
 	@Value("hustack.notice.webhook")
 	private String webhook;
+	
+	private final boolean dev = false;
 
 	@Override
 	public void initSpringProperties() {
@@ -43,8 +45,7 @@ public class NoticeJob extends BaseJob {
 	
 		long begin = System.currentTimeMillis();
 		
-//		Path reportJsonPath = super.getReportJsonPath();
-		Path reportJsonPath = Paths.get("index.json");
+		Path reportJsonPath = dev ? Paths.get("index.json") : super.getReportJsonPath();
 		
 		Report result = parseJson(reportJsonPath);
 		General general = result.getGeneral();
@@ -58,8 +59,7 @@ public class NoticeJob extends BaseJob {
 		Integer uniqueVisitors = general.getUniqueVisitors();
 		Long logSize = general.getLogSize();
 		Long bandwidth = general.getBandwidth();
-//		String logDate = logJob.getLogDate();
-		String logDate = "2018-01-21";
+		String logDate = dev ? "2018-01-21" : super.getLogDate();
 		String detail = "http://120.78.94.189/report/" + logDate;
 		
 		DDRobot ddRobot = new DDRobot();
@@ -80,7 +80,9 @@ public class NoticeJob extends BaseJob {
 		super.logger.info("ddRobot send logDate report: {}", ddRobot);
 		
 		RestTemplate restTemplate = new RestTemplate();
-		webhook = "https://oapi.dingtalk.com/robot/send?access_token=b271dcd03cceddca8509a3d0efd29b7a88bf86e05f63daa06dd35feb44a24b07";
+		if (dev) {
+			webhook = "https://oapi.dingtalk.com/robot/send?access_token=b271dcd03cceddca8509a3d0efd29b7a88bf86e05f63daa06dd35feb44a24b07";
+		}
 		ResponseEntity<String> entity = restTemplate.postForEntity(webhook, ddRobot, String.class);
 		String body = entity.getBody();
 		
