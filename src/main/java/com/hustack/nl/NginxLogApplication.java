@@ -38,6 +38,11 @@ public class NginxLogApplication {
 		return "hello";
 	}
 
+	@GetMapping("/redis/{str}")
+	public String redis(@PathVariable String str) {
+		return test3.cache(str);
+	}
+
 	@GetMapping("/log")
 	public void log() {
 		try {

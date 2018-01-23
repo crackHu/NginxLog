@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "hustack", ignoreUnknownFields = false)
 public class HuStackProperties {
 	
+	private Boolean enable;
+	
 	private final Log log = new Log();
 	
 	public static class Log {
@@ -116,5 +118,13 @@ public class HuStackProperties {
 
 	public Notice getNotice() {
 		return notice;
+	}
+
+	public Boolean getEnable() {
+		return enable;
+	}
+
+	public void setEnable(Boolean enable) {
+		this.enable = enable;
 	}
 }

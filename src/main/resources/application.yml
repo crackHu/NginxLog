@@ -2,6 +2,7 @@ spring:
     application:
         name: NginxLog
 hustack: 
+  enable: false
   log: 
     # endpoint: https://www.peoplesmedic.com/logs/
     endpoint: https://www.medic.ren/logs/

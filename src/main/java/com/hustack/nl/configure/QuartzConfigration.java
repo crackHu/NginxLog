@@ -1,6 +1,8 @@
 package com.hustack.nl.configure;
 
 import org.quartz.Trigger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
@@ -11,6 +13,9 @@ import com.hustack.nl.scheduled.job.LogJob;
 
 @Configuration
 public class QuartzConfigration {
+	
+	public Logger logger = LoggerFactory.getLogger(QuartzConfigration.class);
+	
 	/**
 	 * attention: Details：配置定时任务
 	 */
@@ -56,14 +61,19 @@ public class QuartzConfigration {
 	 * attention: Details：定义quartz调度工厂
 	 */
 	@Bean(name = "scheduler")
-	public SchedulerFactoryBean schedulerFactory(Trigger[] cronJobTrigger) {
+	public SchedulerFactoryBean schedulerFactory(Trigger[] cronJobTrigger, HuStackProperties properties) {
+		Boolean enable = properties.getEnable();
 		SchedulerFactoryBean bean = new SchedulerFactoryBean();
-		// 用于quartz集群,QuartzScheduler 启动时更新己存在的Job
-		bean.setOverwriteExistingJobs(true);
-		// 延时启动，应用启动1秒后
-		bean.setStartupDelay(1);
-		// 注册触发器
-		bean.setTriggers(cronJobTrigger);
+		if (enable) {
+			// 用于quartz集群,QuartzScheduler 启动时更新己存在的Job
+			bean.setOverwriteExistingJobs(true);
+			// 延时启动，应用启动1秒后
+			bean.setStartupDelay(1);
+			// 注册触发器
+			bean.setTriggers(cronJobTrigger);
+		} else {
+			logger.info("********* Scheduler Disabled *********");
+		}
 		return bean;
 	}
 }
