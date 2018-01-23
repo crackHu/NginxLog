@@ -2,7 +2,8 @@ spring:
     application:
         name: NginxLog
 hustack: 
-  enable: false
+  enable: true
+  cronKey: 'group1-%s-cron'
   log: 
     # endpoint: https://www.peoplesmedic.com/logs/
     endpoint: https://www.medic.ren/logs/
@@ -15,8 +16,8 @@ hustack:
     dateFormat: '%d/%b/%Y'
     logFormat: '%h %^ %^ [%d:%t %^] "%r" %s %b %^"%R" "%u" "%^" %T'
     savePath: /reports
-    cron: '0 30 0 * * ?'
+    cron: '0 0 1 * * ?'
   notice: 
-    cron: '0 30 9 * * ?'
+    cron: '0 0 9 * * ?'
     # webhook: https://oapi.dingtalk.com/robot/send?access_token=b271dcd03cceddca8509a3d0efd29b7a88bf86e05f63daa06dd35feb44a24b07 # mine
     webhook: https://oapi.dingtalk.com/robot/send?access_token=45ccf60651d3790792012d1de8283b572a3ee918c336fcf2f4b71fdaa4d42dbe

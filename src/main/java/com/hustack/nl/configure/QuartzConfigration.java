@@ -60,7 +60,7 @@ public class QuartzConfigration {
 	/**
 	 * attention: Details：定义quartz调度工厂
 	 */
-	@Bean(name = "scheduler")
+	@Bean
 	public SchedulerFactoryBean schedulerFactory(Trigger[] cronJobTrigger, HuStackProperties properties) {
 		Boolean enable = properties.getEnable();
 		SchedulerFactoryBean bean = new SchedulerFactoryBean();

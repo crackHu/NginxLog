@@ -9,6 +9,8 @@ public class HuStackProperties {
 	
 	private Boolean enable;
 	
+	private String cronKey;
+	
 	private final Log log = new Log();
 	
 	public static class Log {
@@ -126,5 +128,13 @@ public class HuStackProperties {
 
 	public void setEnable(Boolean enable) {
 		this.enable = enable;
+	}
+
+	public String getCronKey(String jobName) {
+		return String.format(cronKey, jobName);
+	}
+
+	public void setCronKey(String cronKey) {
+		this.cronKey = cronKey;
 	}
 }
