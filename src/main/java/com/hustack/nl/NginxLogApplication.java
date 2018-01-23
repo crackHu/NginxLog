@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hustack.nl.configure.Test;
+import com.hustack.nl.configure.WebMVCConfiguration;
 import com.hustack.nl.scheduled.job.LogJob;
 import com.hustack.nl.scheduled.job.ParseJob;
+import com.hustack.nl.util.RedisUtils;
 
 @RestController
 @SpringBootApplication
@@ -39,8 +41,9 @@ public class NginxLogApplication {
 	}
 
 	@GetMapping("/redis/{str}")
-	public String redis(@PathVariable String str) {
-		return test3.cache(str);
+	public Test redis(@PathVariable String str) {
+		// return new Test(str);
+		return test1.cache(str);
 	}
 
 	@GetMapping("/log")

@@ -15,11 +15,13 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-	import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 @EnableCaching
@@ -27,7 +29,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 @SuppressWarnings("rawtypes")
 public class RedisCacheConfiguration extends CachingConfigurerSupport {
 
-	private final long DEFAULT_EXPIRATION = 60 * 60 * 24 * 32;
+	private final Duration DEFAULT_EXPIRATION = Duration.ofSeconds(60 * 60 * 24 * 32);
 
 	@Bean
 	public KeyGenerator keyGenerator() {
@@ -36,39 +38,44 @@ public class RedisCacheConfiguration extends CachingConfigurerSupport {
 			sb.append(target.getClass().getName());
 			sb.append(":" + method.getName());
 			for (Object obj : objects) {
-				sb.append("_").append(obj.toString());
+				sb.append(":").append(obj.toString());
 			}
 			return sb.toString();
 		};
 	}
 
 	private org.springframework.data.redis.cache.RedisCacheConfiguration defaultCacheConfig() {
+		@SuppressWarnings("unchecked")
+		SerializationPair serializer = RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer());
 		return org.springframework.data.redis.cache.RedisCacheConfiguration.defaultCacheConfig()
-				.entryTtl(Duration.ofSeconds(DEFAULT_EXPIRATION)).disableCachingNullValues();
+				.entryTtl(DEFAULT_EXPIRATION).serializeValuesWith(serializer).disableCachingNullValues();
 	}
 
 	@Bean
 	public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
 		Map<String, org.springframework.data.redis.cache.RedisCacheConfiguration> cacheConfigurations = Collections
-				.singletonMap("predefined", defaultCacheConfig().disableCachingNullValues());
+				.singletonMap("predefined", defaultCacheConfig());
 		
 		return RedisCacheManager.builder(connectionFactory).cacheDefaults(defaultCacheConfig())
 				.withInitialCacheConfigurations(cacheConfigurations).transactionAware().build();
 	}
 
 	@Bean
-	public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory factory) {
+	public RedisTemplate redisTemplate(RedisConnectionFactory factory) {
 		StringRedisTemplate template = new StringRedisTemplate(factory);
+		template.setValueSerializer(jackson2JsonRedisSerializer());
+		template.afterPropertiesSet();
+		return template;
+	}
 
+	private Jackson2JsonRedisSerializer jackson2JsonRedisSerializer() {
 		Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
 		ObjectMapper om = new ObjectMapper();
 		om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
 		om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
 		om.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 		jackson2JsonRedisSerializer.setObjectMapper(om);
-
-		template.setValueSerializer(jackson2JsonRedisSerializer);
-		template.afterPropertiesSet();
-		return template;
+		return jackson2JsonRedisSerializer;
 	}
+	
 }

@@ -1,9 +1,13 @@
 package com.hustack.nl.configure;
 
+import java.io.Serializable;
+
 import org.springframework.cache.annotation.Cacheable;
 
-public class Test {
+public class Test implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	private String id;
 	
 	public Test() {
@@ -13,10 +17,18 @@ public class Test {
 		this.id = id;
 	}
 	
-	@Cacheable("test")
-	public String cache(String str){
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	@Cacheable("test111")
+	public Test cache(String str){
 		System.out.println("breakdown cache");
-		return str;
+		return new Test(str);
 	}
 
 	@Override
