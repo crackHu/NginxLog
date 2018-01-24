@@ -17,7 +17,7 @@ public class NginxLogApplicationTests {
 	
 	@Test
 	public void redis() {
-		redisUtils.set("test", new com.hustack.nl.configure.Test("a钉钉b"));
+		// redisUtils.set("webhook", "https://oapi.dingtalk.com/robot/send?access_token=b271dcd03cceddca8509a3d0efd29b7a88bf86e05f63daa06dd35feb44a24b07");
 	}
 
 }

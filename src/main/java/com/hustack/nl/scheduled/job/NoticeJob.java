@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +39,7 @@ public class NoticeJob extends BaseJob {
 	
 	private RedisUtils redisUtils;
 	
-	private final boolean dev = true;
+	private final boolean dev = false;
 	
 	private final long DEFAULT_EXPIRATION = 60 * 60 * 24 * 32;
 
@@ -52,8 +53,12 @@ public class NoticeJob extends BaseJob {
 		
 		Notice notice = properties.getNotice();
 		cron = notice.getCron();
-		webhook = notice.getWebhook();
+		
 		redisUtils = SpringUtils.getBean(RedisUtils.class);
+		webhook = (String) redisUtils.get("webhook");
+		if (StringUtils.isBlank(webhook)) {
+			webhook = notice.getWebhook();
+		}
 	}
 
 	@Override
@@ -78,12 +83,12 @@ public class NoticeJob extends BaseJob {
 		Markdown markdown = new Markdown();
 		markdown.setTitle("昨日统计");
 		markdown.setText("#### **昨日统计(总)**\n" +
-                 String.format("> Total Requests (总请求)：%s\n\n", totalRequests) +
-                 String.format("> Valid Requests (有效的请求)：%s\n\n", validRequests) + 
-                 String.format("> Failed Requests (失败的请求)：%s\n\n", failedRequests) +
-                 String.format("> Unique Visitors (独立访客)：%s\n\n", uniqueVisitors) +
-                 String.format("> Log Size (日志大小)：%s\n\n", logSize) +
-                 String.format("> Bandwidth (带宽)：%s\n", bandwidth) +
+                 String.format("> Total Requests: %s\n\n", totalRequests) + // (总请求)：
+                 String.format("> Valid Requests: %s\n\n", validRequests) + // (有效的请求)：
+                 String.format("> Failed Requests: %s\n\n", failedRequests) + // (失败的请求)：
+                 String.format("> Unique Visitors: %s\n\n", uniqueVisitors) + // (独立访客)：
+                 String.format("> Log Size: %s\n\n", logSize) + // (日志大小)：
+                 String.format("> Bandwidth: %s\n", bandwidth) + // (带宽)：
 				 "***\n" +
 				 String.format("###### *%s [详情](%s)  Cost: %s ms* \n", logDate, detail, (System.currentTimeMillis() - begin)));
 		

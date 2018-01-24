@@ -2,6 +2,8 @@ package com.hustack.nl.domain;
 
 import java.text.NumberFormat;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 public class ReportContent {
 
 	private static NumberFormat numberFormat = NumberFormat.getNumberInstance();
@@ -91,17 +93,30 @@ public class ReportContent {
 			return current.toString();
 		} else {
 			String value = numberFormat.format(current);
-			String diffValue = numberFormat.format(current - target);
+			String flag = getUpOrDownFlag(current, target);
 			String plusOrMinus = getPlusOrMinus(current, target);
-			return String.format("%s %s%s", value, plusOrMinus, diffValue);
+			String diffValue = numberFormat.format(current - target);
+			return String.format("%s %s%s%s", value, flag, plusOrMinus, diffValue);
 		}
 	}
 
 	private String getPlusOrMinus(Long current, Long target) {
-		if (current > target) {
+		int compare = NumberUtils.compare(current, target);
+		if (compare > 0) {
 			return "+";
 		}
 		return "";
+	}
+	
+	private String getUpOrDownFlag(Long current, Long target) {
+		int compare = NumberUtils.compare(current, target);
+		String flag = "";
+		if (compare > 0) {
+			flag = "🔺";
+		} else if (compare < 0) {
+			flag = "🔻";
+		}
+		return flag;
 	}
 
 	public String getTotalRequests() {
