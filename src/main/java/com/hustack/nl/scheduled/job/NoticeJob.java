@@ -104,9 +104,6 @@ public class NoticeJob extends BaseJob {
 		ResponseEntity<String> entity = null;
 		try {
 			RestTemplate restTemplate = new RestTemplate();
-			if (dev) {
-				webhook = "https://oapi.dingtalk.com/robot/send?access_token=b271dcd03cceddca8509a3d0efd29b7a88bf86e05f63daa06dd35feb44a24b07";
-			}
 			entity = restTemplate.postForEntity(webhook, request, String.class);
 			response = entity.getBody();
 		} catch (Exception e) {
