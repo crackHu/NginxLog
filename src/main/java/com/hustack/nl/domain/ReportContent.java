@@ -55,7 +55,7 @@ public class ReportContent {
 
 	private String getPrintSize(Long b) {
 		if (b == null) {
-			return null;
+			return "";
 		}
 		Double bit = new Double(b);
 		if (bit < 1024) {

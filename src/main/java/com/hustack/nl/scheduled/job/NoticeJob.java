@@ -68,6 +68,13 @@ public class NoticeJob extends BaseJob {
 		
 		Report result = getReport();
 		Report lastReport = getReport(-2);
+		if (result == null) {
+			logger.error("Oops, report is null!");
+			return;
+		}
+		if (lastReport == null) {
+			lastReport = new Report();
+		}
 		ReportContent reportContent = new ReportContent(result, lastReport);
 		
 		String totalRequests = reportContent.getTotalRequests();
@@ -116,12 +123,8 @@ public class NoticeJob extends BaseJob {
 	}
 
 	public static void main(String[] args) {
-		try {
-			new NoticeJob().exec(null);
-		} catch (JobExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String name = Files.getNameWithoutExtension("asdfdf.json");
+		System.out.println(name);
 	}
 
 	private Report getReport() {
@@ -137,9 +140,9 @@ public class NoticeJob extends BaseJob {
 		}
 		
 		String logName = super.getLogName(amount);
-		Path reportJsonPath = dev ? Paths.get("index" + amount + ".json") : super.getReportJsonPath(logName);
+		String logNameWithoutExt = Files.getNameWithoutExtension(logName);
+		Path reportJsonPath = dev ? Paths.get("index" + amount + ".json") : super.getReportJsonPath(logNameWithoutExt);
 		Report report = parseJson(reportJsonPath);
-		
 		redisUtils.set(reportKey, report, DEFAULT_EXPIRATION);
 		return report;
 	}
@@ -157,7 +160,6 @@ public class NoticeJob extends BaseJob {
 		try {
 			report = JSONUtils.json2pojo(json, Report.class);
 		} catch (Exception e) {
-			report = new Report();
 			super.logger.error("Oops, parseJson has error: {}", e.getMessage(), e);
 		}
 		return report;
