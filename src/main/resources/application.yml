@@ -4,6 +4,9 @@ spring:
 hustack: 
   enable: true
   cronKey: 'group1-%s-cron'
+  reportKey: 'report-%s-json'
+  noticeReqKey: 'notice-%s-request'
+  noticeResKey: 'notice-%s-response'
   log: 
     # endpoint: https://www.peoplesmedic.com/logs/
     endpoint: https://www.medic.ren/logs/

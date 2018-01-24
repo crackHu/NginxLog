@@ -12,13 +12,13 @@ public class General {
 	private String dateTime;
 
 	@JsonProperty("excluded_hits")
-	private Integer excludedHits;
+	private Long excludedHits;
 
 	@JsonProperty("failed_requests")
-	private Integer failedRequests;
+	private Long failedRequests;
 
 	@JsonProperty("generation_time")
-	private Integer generationTime;
+	private Long generationTime;
 
 	@JsonProperty("log_path")
 	private List<String> logPath;
@@ -30,25 +30,25 @@ public class General {
 	private String startDate;
 
 	@JsonProperty("total_requests")
-	private Integer totalRequests;
+	private Long totalRequests;
 
 	@JsonProperty("unique_files")
-	private Integer uniqueFiles;
+	private Long uniqueFiles;
 
 	@JsonProperty("unique_not_found")
-	private Integer uniqueNotFound;
+	private Long uniqueNotFound;
 
 	@JsonProperty("unique_referrers")
-	private Integer uniqueReferrers;
+	private Long uniqueReferrers;
 
 	@JsonProperty("unique_static_files")
-	private Integer uniqueStaticFiles;
+	private Long uniqueStaticFiles;
 
 	@JsonProperty("unique_visitors")
-	private Integer uniqueVisitors;
+	private Long uniqueVisitors;
 
 	@JsonProperty("valid_requests")
-	private Integer validRequests;
+	private Long validRequests;
 
 	public Long getBandwidth() {
 		return bandwidth;
@@ -66,27 +66,27 @@ public class General {
 		this.dateTime = dateTime;
 	}
 
-	public Integer getExcludedHits() {
+	public Long getExcludedHits() {
 		return excludedHits;
 	}
 
-	public void setExcludedHits(Integer excludedHits) {
+	public void setExcludedHits(Long excludedHits) {
 		this.excludedHits = excludedHits;
 	}
 
-	public Integer getFailedRequests() {
+	public Long getFailedRequests() {
 		return failedRequests;
 	}
 
-	public void setFailedRequests(Integer failedRequests) {
+	public void setFailedRequests(Long failedRequests) {
 		this.failedRequests = failedRequests;
 	}
 
-	public Integer getGenerationTime() {
+	public Long getGenerationTime() {
 		return generationTime;
 	}
 
-	public void setGenerationTime(Integer generationTime) {
+	public void setGenerationTime(Long generationTime) {
 		this.generationTime = generationTime;
 	}
 
@@ -114,59 +114,59 @@ public class General {
 		this.startDate = startDate;
 	}
 
-	public Integer getTotalRequests() {
+	public Long getTotalRequests() {
 		return totalRequests;
 	}
 
-	public void setTotalRequests(Integer totalRequests) {
+	public void setTotalRequests(Long totalRequests) {
 		this.totalRequests = totalRequests;
 	}
 
-	public Integer getUniqueFiles() {
+	public Long getUniqueFiles() {
 		return uniqueFiles;
 	}
 
-	public void setUniqueFiles(Integer uniqueFiles) {
+	public void setUniqueFiles(Long uniqueFiles) {
 		this.uniqueFiles = uniqueFiles;
 	}
 
-	public Integer getUniqueNotFound() {
+	public Long getUniqueNotFound() {
 		return uniqueNotFound;
 	}
 
-	public void setUniqueNotFound(Integer uniqueNotFound) {
+	public void setUniqueNotFound(Long uniqueNotFound) {
 		this.uniqueNotFound = uniqueNotFound;
 	}
 
-	public Integer getUniqueReferrers() {
+	public Long getUniqueReferrers() {
 		return uniqueReferrers;
 	}
 
-	public void setUniqueReferrers(Integer uniqueReferrers) {
+	public void setUniqueReferrers(Long uniqueReferrers) {
 		this.uniqueReferrers = uniqueReferrers;
 	}
 
-	public Integer getUniqueStaticFiles() {
+	public Long getUniqueStaticFiles() {
 		return uniqueStaticFiles;
 	}
 
-	public void setUniqueStaticFiles(Integer uniqueStaticFiles) {
+	public void setUniqueStaticFiles(Long uniqueStaticFiles) {
 		this.uniqueStaticFiles = uniqueStaticFiles;
 	}
 
-	public Integer getUniqueVisitors() {
+	public Long getUniqueVisitors() {
 		return uniqueVisitors;
 	}
 
-	public void setUniqueVisitors(Integer uniqueVisitors) {
+	public void setUniqueVisitors(Long uniqueVisitors) {
 		this.uniqueVisitors = uniqueVisitors;
 	}
 
-	public Integer getValidRequests() {
+	public Long getValidRequests() {
 		return validRequests;
 	}
 
-	public void setValidRequests(Integer validRequests) {
+	public void setValidRequests(Long validRequests) {
 		this.validRequests = validRequests;
 	}
 

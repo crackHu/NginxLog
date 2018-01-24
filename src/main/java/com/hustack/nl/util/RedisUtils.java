@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Component;
  */
 @Component  
 public class RedisUtils {  
+	
+	public Logger logger = LoggerFactory.getLogger(RedisUtils.class);
   
     @Autowired
 	@SuppressWarnings("rawtypes")
@@ -95,7 +99,7 @@ public class RedisUtils {
             operations.set(key, value);  
             result = true;  
         } catch (Exception e) {  
-            e.printStackTrace();  
+        	logger.error("Oops, RedisUtils[set({}, {})] has error: {}", key, value, e.getMessage(), e);
         }  
         return result;  
     }  
@@ -116,7 +120,7 @@ public class RedisUtils {
             redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);  
             result = true;  
         } catch (Exception e) {  
-            e.printStackTrace();  
+        	logger.error("Oops, RedisUtils[set({}, {})] has error: {}", key, value, e.getMessage(), e);
         }  
         return result;  
     }  

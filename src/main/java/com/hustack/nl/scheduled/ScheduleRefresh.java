@@ -17,16 +17,16 @@ import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.Maps;
 import com.hustack.nl.configure.HuStackProperties;
 import com.hustack.nl.util.RedisUtils;
 
-@Component
+@Configuration
 @EnableScheduling
 public class ScheduleRefresh {
 

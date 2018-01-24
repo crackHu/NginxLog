@@ -52,7 +52,7 @@ public class LogJob extends BaseJob {
 	public void exec(JobExecutionContext context) throws JobExecutionException {
 		initSpringProperties();
 		// 1. download log file
-		String logName = getLogName(nameFormat, dateFormat);
+		String logName = getLogName();
 		String url = endpoint + logName;
 		URI resourceUri = URI.create(url);
 		File download = IOUtils.download(resourceUri);

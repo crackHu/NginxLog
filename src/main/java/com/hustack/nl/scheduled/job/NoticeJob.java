@@ -16,10 +16,12 @@ import com.google.common.io.Files;
 import com.hustack.nl.configure.HuStackProperties;
 import com.hustack.nl.configure.HuStackProperties.Notice;
 import com.hustack.nl.domain.DDRobot;
-import com.hustack.nl.domain.General;
 import com.hustack.nl.domain.Markdown;
 import com.hustack.nl.domain.Report;
+import com.hustack.nl.domain.ReportContent;
 import com.hustack.nl.util.JSONUtils;
+import com.hustack.nl.util.RedisUtils;
+import com.hustack.nl.util.SpringUtils;
 
 @Component
 public class NoticeJob extends BaseJob {
@@ -30,14 +32,28 @@ public class NoticeJob extends BaseJob {
 	@Value("hustack.notice.webhook")
 	private String webhook;
 	
-	private final boolean dev = false;
+	private String noticeReqKey;
+	
+	private String noticeResKey;
+	
+	private RedisUtils redisUtils;
+	
+	private final boolean dev = true;
+	
+	private final long DEFAULT_EXPIRATION = 60 * 60 * 24 * 32;
 
 	@Override
 	public void initSpringProperties() {
 		HuStackProperties properties = super.getProperties();
+		
+		String date = super.getLogDate();
+		noticeReqKey = properties.getNoticeReqKey(date);
+		noticeResKey = properties.getNoticeResKey(date);
+		
 		Notice notice = properties.getNotice();
 		cron = notice.getCron();
 		webhook = notice.getWebhook();
+		redisUtils = SpringUtils.getBean(RedisUtils.class);
 	}
 
 	@Override
@@ -45,20 +61,16 @@ public class NoticeJob extends BaseJob {
 	
 		long begin = System.currentTimeMillis();
 		
-		Path reportJsonPath = dev ? Paths.get("index.json") : super.getReportJsonPath();
+		Report result = getReport();
+		Report lastReport = getReport(-2);
+		ReportContent reportContent = new ReportContent(result, lastReport);
 		
-		Report result = parseJson(reportJsonPath);
-		General general = result.getGeneral();
-		if (general == null) {
-			return;
-		}
-		
-		Integer totalRequests = general.getTotalRequests();
-		Integer validRequests = general.getValidRequests();
-		Integer failedRequests = general.getFailedRequests();
-		Integer uniqueVisitors = general.getUniqueVisitors();
-		Long logSize = general.getLogSize();
-		Long bandwidth = general.getBandwidth();
+		String totalRequests = reportContent.getTotalRequests();
+		String validRequests = reportContent.getValidRequests();
+		String failedRequests = reportContent.getFailedRequests();
+		String uniqueVisitors = reportContent.getUniqueVisitors();
+		String logSize = reportContent.getLogSize();
+		String bandwidth = reportContent.getBandwidth();
 		String logDate = dev ? "2018-01-21" : super.getLogDate();
 		String detail = "http://120.78.94.189/report/" + logDate;
 		
@@ -70,23 +82,35 @@ public class NoticeJob extends BaseJob {
                  String.format("> Valid Requests (有效的请求)：%s\n\n", validRequests) + 
                  String.format("> Failed Requests (失败的请求)：%s\n\n", failedRequests) +
                  String.format("> Unique Visitors (独立访客)：%s\n\n", uniqueVisitors) +
-                 String.format("> Log Size (日志大小)：%s\n\n", getPrintSize(logSize)) +
-                 String.format("> Bandwidth (带宽)：%s\n", getPrintSize(bandwidth)) +
+                 String.format("> Log Size (日志大小)：%s\n\n", logSize) +
+                 String.format("> Bandwidth (带宽)：%s\n", bandwidth) +
 				 "***\n" +
 				 String.format("###### *%s [详情](%s)  Cost: %s ms* \n", logDate, detail, (System.currentTimeMillis() - begin)));
 		
 		ddRobot.setMarkdown(markdown);
+		notice(ddRobot);
+	}
+
+	private void notice(DDRobot request) {
+		redisUtils.set(noticeReqKey, request, DEFAULT_EXPIRATION);
+		super.logger.info("ddRobot send logDate report: {}", request);
 		
-		super.logger.info("ddRobot send logDate report: {}", ddRobot);
-		
-		RestTemplate restTemplate = new RestTemplate();
-		if (dev) {
-			webhook = "https://oapi.dingtalk.com/robot/send?access_token=b271dcd03cceddca8509a3d0efd29b7a88bf86e05f63daa06dd35feb44a24b07";
+		String response = null;
+		ResponseEntity<String> entity = null;
+		try {
+			RestTemplate restTemplate = new RestTemplate();
+			if (dev) {
+				webhook = "https://oapi.dingtalk.com/robot/send?access_token=b271dcd03cceddca8509a3d0efd29b7a88bf86e05f63daa06dd35feb44a24b07";
+			}
+			entity = restTemplate.postForEntity(webhook, request, String.class);
+			response = entity.getBody();
+		} catch (Exception e) {
+			response = e.getMessage();
+			super.logger.error("Oops, notice error: {}", e.getMessage(), e);
 		}
-		ResponseEntity<String> entity = restTemplate.postForEntity(webhook, ddRobot, String.class);
-		String body = entity.getBody();
-		
-		super.logger.info("ddRobot receive response: {}", body);
+
+		redisUtils.set(noticeResKey, response, DEFAULT_EXPIRATION);
+		super.logger.info("ddRobot receive response: {}", response);
 	}
 
 	public static void main(String[] args) {
@@ -97,28 +121,25 @@ public class NoticeJob extends BaseJob {
 			e.printStackTrace();
 		}
 	}
+
+	private Report getReport() {
+		return getReport(-1);
+	}
 	
-	private static String getPrintSize(Long b) {
-		if (b == null) {
-			return null;
+	private Report getReport(int amount) {
+		String logDate = super.getLogDate(amount);
+		String reportKey = properties.getReportKey(logDate);
+		boolean exists = redisUtils.exists(reportKey);
+		if (exists) {
+			return (Report) redisUtils.get(reportKey);
 		}
-		Double bit = new Double(b);
-		if (bit < 1024) {
-			return String.format("%.2f B", bit);
-		} else {
-			bit = bit / 1024;
-		}
-		if (bit < 1024) {
-			return String.format("%.2f KB", bit);
-		} else {
-			bit = bit / 1024;
-		}
-		if (bit < 1024) {
-			return String.format("%.2f MiB", bit);
-		} else {
-			bit = bit / 1024;
-			return String.format("%.2f GiB", bit);
-		}
+		
+		String logName = super.getLogName(amount);
+		Path reportJsonPath = dev ? Paths.get("index" + amount + ".json") : super.getReportJsonPath(logName);
+		Report report = parseJson(reportJsonPath);
+		
+		redisUtils.set(reportKey, report, DEFAULT_EXPIRATION);
+		return report;
 	}
 	
 	public Report parseJson(Path jsonFile) {

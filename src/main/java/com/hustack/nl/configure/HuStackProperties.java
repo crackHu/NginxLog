@@ -11,6 +11,12 @@ public class HuStackProperties {
 	
 	private String cronKey;
 	
+	private String reportKey;
+	
+	private String noticeReqKey;
+	
+	private String noticeResKey;
+	
 	private final Log log = new Log();
 	
 	public static class Log {
@@ -136,5 +142,29 @@ public class HuStackProperties {
 
 	public void setCronKey(String cronKey) {
 		this.cronKey = cronKey;
+	}
+
+	public String getReportKey(String date) {
+		return String.format(reportKey, date);
+	}
+
+	public void setReportKey(String reportKey) {
+		this.reportKey = reportKey;
+	}
+
+	public String getNoticeReqKey(String date) {
+		return String.format(noticeReqKey, date);
+	}
+
+	public void setNoticeReqKey(String noticeReqKey) {
+		this.noticeReqKey = noticeReqKey;
+	}
+
+	public String getNoticeResKey(String date) {
+		return String.format(noticeResKey, date);
+	}
+
+	public void setNoticeResKey(String noticeResKey) {
+		this.noticeResKey = noticeResKey;
 	}
 }

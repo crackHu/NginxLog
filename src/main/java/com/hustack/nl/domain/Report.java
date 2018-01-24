@@ -21,10 +21,4 @@ public class Report {
 	public void setRequests(Requests requests) {
 		this.requests = requests;
 	}
-
-	@Override
-	public String toString() {
-		return "Report [general=" + general + ", requests=" + requests + "]";
-	}
-	
 }

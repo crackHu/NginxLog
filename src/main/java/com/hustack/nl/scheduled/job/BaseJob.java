@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.text.StrSubstitutor;
 import org.quartz.Job;
@@ -73,28 +74,39 @@ public abstract class BaseJob implements Job {
 	
 	protected String getLogDate() {
 		final String dateFormat = log.getDateFormat();
-		return getLogDate(dateFormat);
+		return getLogDate(dateFormat, -1);
 	}
 	
-	protected String getLogDate(String dateFormat) {
+	protected String getLogDate(int amount) {
+		final String dateFormat = log.getDateFormat();
+		return getLogDate(dateFormat, amount);
+	}
+	
+	protected String getLogDate(String dateFormat, int amount) {
 		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.DATE, -1);
+		calendar.add(Calendar.DATE, amount);	
 		return DateFormatUtils.format(calendar, dateFormat);
 	}
 	
 	protected String getLogName() {
 		final String dateFormat = log.getDateFormat();
 		final String nameFormat = log.getNameFOrmat();
-		return getLogName(nameFormat, dateFormat);
+		return getLogName(nameFormat, dateFormat, -1);
 	}
-
-	protected String getLogName(String nameFormat, String dateFormat) {
+	
+	protected String getLogName(int amount) {
+		final String dateFormat = log.getDateFormat();
+		final String nameFormat = log.getNameFOrmat();
+		return getLogName(nameFormat, dateFormat, amount);
+	}
+	
+	protected String getLogName(String nameFormat, String dateFormat, int amount) {
 		final String prefix = "%";
 		final String suffix = "%";
 
 		Map<String, Object> map = Maps.newHashMap();
-		String yesterday = getLogDate(dateFormat);
-		map.put("date", yesterday);
+		String date = getLogDate(amount);
+		map.put("date", date);
 		return StrSubstitutor.replace(nameFormat, map, prefix, suffix);
 	}
 	
